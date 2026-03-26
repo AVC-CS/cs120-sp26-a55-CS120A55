@@ -1,54 +1,38 @@
 import pytest
 import re
 
-def regex_test(expected, lines):
-    i = 0 ; match = 0
+def regex_test(expected, content):
+    pos = 0
     for token in expected:
-        for j in range(i, len(lines)):
-            res = re.search(token, lines[j])
-            if res is not None:
-                i = j + 1
-                match += 1
-                break
-        else:
-            print(f'\033[91m Not Found: {token} \033[0m')
-            assert False, f'Expect: {expected}'
-    else:
-        print(f'\033[91m match count: {match} \033[0m')
-        assert match == len(expected), f'Expect: {expected}'
-
+        res = re.search(token, content[pos:])
+        if res is None:
+            assert False, f'Expect: {token}'
+        pos += res.start() + 1
 
 @pytest.mark.T1
 def test_main_1():
-    with open('result1.txt', 'r') as f:
-        lines = f.readlines()
-    print(lines)
-    lines = [line.strip() for line in lines]
-    regex_test([r'Alice.*270.*90', r'Bob.*210.*70'], lines)
-
+    # 2 students, 3 scores each: Alice 80 90 100 -> total=270 avg=90; Bob 60 70 80 -> total=210 avg=70
+    content = open('result1.txt').read()
+    print(content)
+    regex_test([r'Alice.*270.*90', r'Bob.*210.*70'], content)
 
 @pytest.mark.T2
 def test_main_2():
-    with open('result2.txt', 'r') as f:
-        lines = f.readlines()
-    print(lines)
-    lines = [line.strip() for line in lines]
-    regex_test([r'James.*190.*95', r'Michael.*180.*90'], lines)
-
+    # 3 students, 2 scores each: James 90 100 -> 190 avg=95; Michael 90 90 -> 180 avg=90
+    content = open('result2.txt').read()
+    print(content)
+    regex_test([r'James.*190.*95', r'Michael.*180.*90'], content)
 
 @pytest.mark.T3
 def test_main_3():
-    with open('result3.txt', 'r') as f:
-        lines = f.readlines()
-    print(lines)
-    lines = [line.strip() for line in lines]
-    regex_test([r'Sara.*100.*25'], lines)
-
+    # 1 student, 4 scores: Sara 25 25 25 25 -> total=100 avg=25
+    content = open('result3.txt').read()
+    print(content)
+    regex_test([r'Sara.*100.*25'], content)
 
 @pytest.mark.T4
 def test_main_4():
-    with open('result4.txt', 'r') as f:
-        lines = f.readlines()
-    print(lines)
-    lines = [line.strip() for line in lines]
-    regex_test([r'James.*190.*95', r'Linda.*200.*100'], lines)
+    # 4 students, 2 scores: James 90 100 -> 190 avg=95; Linda 100 100 -> 200 avg=100
+    content = open('result4.txt').read()
+    print(content)
+    regex_test([r'James.*190.*95', r'Linda.*200.*100'], content)
